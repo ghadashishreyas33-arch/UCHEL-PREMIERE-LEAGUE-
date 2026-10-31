@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCHEL PREMIERE LEAGUE - SEASON 5</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #101827;
+  color: white;
+  text-align: center;
+}
+header {
+  background: #f5a623;
+  color: #111;
+  padding: 22px 10px;
+}
+h1 { margin: 0; font-size: 25px; }
+h2 { color: #ffbd45; }
+.card {
+  background: #1e293b;
+  margin: 15px;
+  padding: 18px;
+  border-radius: 12px;
+}
+button {
+  padding: 12px 18px;
+  margin: 6px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: bold;
+  background: #f5a623;
+  cursor: pointer;
+}
+input, select {
+  padding: 12px;
+  margin: 6px;
+  border-radius: 6px;
+  max-width: 90%;
+}
+#status { color: #65e6a1; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🏏 UCHEL PREMIERE LEAGUE</h1>
+  <h3>SEASON 5 – MEGA AUCTION</h3>
+</header>
+
+<div class="card">
+  <h2>LIVE AUCTION</h2>
+  <p id="status">Waiting for setup...</p>
+  <h2 id="player">Player Name</h2>
+  <h3 id="bid">Current Bid: 0 Points</h3>
+  <h3 id="team">Highest Bidder: -</h3>
+</div>
+
+<div class="card">
+  <h2>AUCTION CONTROL</h2>
+  <input id="playerName" placeholder="Player Name">
+  <select id="skill">
+    <option>Batsman</option>
+    <option>Bowler</option>
+    <option>All-Rounder</option>
+    <option>Wicket-Keeper</option>
+  </select>
+  <input id="basePrice" type="number" placeholder="Base Price">
+  <button onclick="addPlayer()">ADD PLAYER</button>
+</div>
+
+<div class="card">
+  <h2>TEAM BIDDING</h2>
+  <div id="teams"></div>
+  <button onclick="sold()">🔨 SOLD</button>
+  <button onclick="unsold()">UNSOLD</button>
+  <button onclick="nextPlayer()">NEXT PLAYER</button>
+</div>
+
+<div class="card">
+  <h2>TEAM POINTS & SQUADS</h2>
+  <div id="squads"></div>
+</div>
+
+<script>
+const teams = [
+ "TEAM 1", "TEAM 2", "TEAM 3", "TEAM 4", "TEAM 5"
+];
+
+let budget = {};
+teams.forEach(t => budget[t] = 10000);
+
+let players = [];
+let current = null;
+let currentBid = 0;
+let highestTeam = "";
+let squads = {};
+teams.forEach(t => squads[t] = []);
+
+function showTeams() {
+ document.getElementById("teams").innerHTML =
+ teams.map(t => `<button onclick="bid('${t}')">${t}</button>`).join("");
+
+ document.getElementById("squads").innerHTML =
+ teams.map(t => `<p><b>${t}</b> | Points: ${budget[t]} | Players: ${squads[t].length}</p>`).join("");
+}
+
+function addPlayer() {
+ const name = document.getElementById("playerName").value.trim();
+ const skill = document.getElementById("skill").value;
+ const price = Number(document.getElementById("basePrice").value);
+
+ if (!name || price <= 0) {
+   alert("Enter player name and base price");
+   return;
+ }
+
+ players.push({name, skill, price});
+ alert("Player added!");
+ document.getElementById("playerName").value = "";
+ document.getElementById("basePrice").value = "";
+}
+
+function nextPlayer() {
+ if (!players.length) {
+   alert("Add players first!");
+   return;
+ }
+ current = players.shift();
+ currentBid = current.price;
+ highestTeam = "";
+ show();
+}
+
+function bid
